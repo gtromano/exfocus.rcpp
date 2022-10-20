@@ -36,7 +36,7 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
 
   // initialization of the info list
-  Cost initcost({newP(0.0, 0, 0.0)}, 0.0);
+  Cost initcost({newP(0.0, 0, 0.0), std::make_shared<PieceBer>()}, 0.0);
   CUSUM initcusum;
   Info info(initcusum, initcost, initcost);
 
@@ -48,13 +48,15 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
   // test
   info.Ql.ps.front()->eval(info.cs, 1.0, 0.0);
+  info.Ql.ps.back()->eval(info.cs, 1.0, 0.0);
+
 
   std::list<double> stat;
   std::list<int> qlsize;
   std::list<int> qrsize;
 
   for (auto& y:Y) {
-    //info = focus_step(info, y, newP, threshold, theta0, adp_max_check);
+    info = focus_step(info, y, newP, threshold, theta0, adp_max_check);
     stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
 
     qlsize.push_back(info.Ql.ps.size());
@@ -82,6 +84,7 @@ theta0 <- 0
 set.seed(42)
 Y <- c(rnorm(5, theta0), rnorm(2, theta0 - 1))
 
-res <- focus_offline(Y, 17, family = "bernoulli", theta0 = NaN, args = list(), adp_max_check = F)
+library(focus.new)
+res <- focus_offline(Y, 17, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F)
 plot(res$stat, type = "l")
 */

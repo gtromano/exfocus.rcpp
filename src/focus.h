@@ -89,5 +89,6 @@ struct Info {
 // double eval (const PieceBer &q, const CUSUM &cs, double x, const double &theta0);
 // void prune (Cost &Q, const CUSUM &cs, const double &theta0, std::function<bool(Piece, Piece)> cond);
 //auto focus_step (auto I, const double& y, auto newP, const double& thres, const double& theta0, const bool& adp_max_check);
+Info focus_step (Info I, const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 
 #endif
