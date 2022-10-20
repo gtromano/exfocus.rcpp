@@ -12,13 +12,33 @@ NumericVector timesTwo(NumericVector x) {
 List focus_offline (NumericVector Y, double threshold, String family, double theta0, List args, bool adp_max_check) {
 
   // here we define the function to initialize a new piece
-  PieceGau newP;
+  std::function<std::shared_ptr<Piece>(double, int, double)> newP;
+
+  if (family == "gaussian") {
+    newP = [](double St, int tau, double m0){
+      std::shared_ptr<Piece> p = std::make_shared<PieceGau>();
+      p->St = St;
+      p->tau = tau;
+      p->m0 = m0;
+
+      return p;
+    };
+  } else if (family == "bernoulli") {
+    newP = [](double St, int tau, double m0){
+      std::shared_ptr<Piece> p = std::make_shared<PieceBer>();
+      p->St = St;
+      p->tau = tau;
+      p->m0 = m0;
+
+      return p;
+    };
+  }
 
 
   // initialization of the info list
-  Cost<PieceGau> initcost({newP}, 0.0);
+  Cost initcost({newP(0.0, 0, 0.0)}, 0.0);
   CUSUM initcusum;
-  Info<PieceGau> info(initcusum, initcost, initcost);
+  Info info(initcusum, initcost, initcost);
 
   // this is a temporary fix for the gaussian cost
   if (family == "gaussian" & !std::isnan(theta0)) {
@@ -27,7 +47,7 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
   }
 
   // test
-  info.Ql.ps.front().eval(info.cs, 1.0, 0.0);
+  info.Ql.ps.front()->eval(info.cs, 1.0, 0.0);
 
   std::list<double> stat;
   std::list<int> qlsize;
@@ -62,6 +82,6 @@ theta0 <- 0
 set.seed(42)
 Y <- c(rnorm(5, theta0), rnorm(2, theta0 - 1))
 
-res <- focus_offline(Y, 17, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F)
+res <- focus_offline(Y, 17, family = "bernoulli", theta0 = NaN, args = list(), adp_max_check = F)
 plot(res$stat, type = "l")
 */

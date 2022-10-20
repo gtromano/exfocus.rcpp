@@ -5,8 +5,9 @@
 #include <list>
 #include <numeric>      // std::iota
 #include <cmath>
-#include <algorithm>
+//#include <algorithm>
 #include <functional>
+#include <memory>
 
 struct CUSUM {
   double Sn = 0.0;
@@ -14,24 +15,18 @@ struct CUSUM {
 };
 
 
-// basic piece function
 struct Piece {
   double St = 0.0;
   int tau = 0;
   double m0 = 0.0;
   double Mdiff = 0.0;
 
-  double eval (const CUSUM& cs, double x, const double& theta0) const {
-    auto c = (double)(cs.n - tau);
-    auto S = (cs.Sn - St);
+  // eval method has no generic, and it's distribution specific
+  virtual double eval (const CUSUM& cs, double x, const double& theta0) const = 0;
 
-    std::cout << "running default" << std::endl;
-
-    if (std::isnan(theta0))
-      return 0.0;
-    else
-      return 0.0;
-
+  // this is the generic argmax method, that should work for all but gamma
+  virtual double argmax (const CUSUM &cs ) const {
+    return (cs.Sn - St) / (double)(cs.n - tau);
   }
 
 };
@@ -74,15 +69,16 @@ struct PieceGam:Piece {
   double shape = 1.0;
 };
 
-template <typename T> struct Cost {
-  std::list<T> ps;
+// the cost is a list of shared pointers to pieces of type Piece
+struct Cost {
+  std::list<std::shared_ptr<Piece>> ps;
   double opt = 0;
 };
 
-template <typename T> struct Info {
+struct Info {
   CUSUM cs;
-  Cost<T> Ql;
-  Cost<T> Qr;
+  Cost Ql;
+  Cost Qr;
 };
 
 
@@ -92,6 +88,6 @@ template <typename T> struct Info {
 // double eval (const PieceGau &q, const CUSUM &cs, double x, const double &theta0);
 // double eval (const PieceBer &q, const CUSUM &cs, double x, const double &theta0);
 // void prune (Cost &Q, const CUSUM &cs, const double &theta0, std::function<bool(Piece, Piece)> cond);
-auto focus_step (auto I, const double& y, auto newP, const double& thres, const double& theta0, const bool& adp_max_check);
+//auto focus_step (auto I, const double& y, auto newP, const double& thres, const double& theta0, const bool& adp_max_check);
 
 #endif
