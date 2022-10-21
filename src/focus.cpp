@@ -126,7 +126,7 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
  * focus recursion, one iteration
  */
 
-void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)>& newP, const double& thres, const double& theta0, const bool& adp_max_check) {
+void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
 
   // updating the cusums and count with the new point
   cs.n ++;
@@ -139,7 +139,7 @@ void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, 
   // updating the value of the max of the null (for pre-change mean unkown)
   auto m0val = 0.0;
   if (std::isnan(theta0))
-    m0val = get_max(newP(0.0, 0, 0.0), cs, theta0);
+    m0val = get_max(Qr.ps.front(), cs, theta0);
 
   // if (std::isnan(theta0)) {
   //   m0val = get_max(newP, cs, theta0);
@@ -166,8 +166,8 @@ void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, 
   }
 
   // add a new point
-  Qr.ps.push_back(newP(cs.Sn, cs.n, m0val));
-  Ql.ps.push_back(newP(cs.Sn, cs.n, m0val));
+  Qr.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
+  Ql.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
 
 
   // std::cout << "__________________________" << std::endl;

@@ -79,7 +79,7 @@ struct Info {
   CUSUM cs;
   Cost Ql;
   Cost Qr;
-  void update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)>& newP, const double& thres, const double& theta0, const bool& adp_max_check);
+  void update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 };
 
 

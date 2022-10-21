@@ -82,7 +82,7 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 /*** R
 theta0 <- 0
 set.seed(42)
-Y <- c(rnorm(1e7, theta0), rnorm(200, theta0 - 1))
+Y <- c(rnorm(1e8, theta0), rnorm(200, theta0 - 1))
 
 library(focus.new)
 system.time(res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F))
