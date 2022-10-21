@@ -68,15 +68,15 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 
   // compare the last two quadratics
-  while (cond((*qi), (*std::next(qi, 1))) & Q.ps.size() > 1) {
+  while (cond((*qi), (*std::next(qi, 1)))) {
 
-    std::cout << "RUNNING!" << std::endl;
-
+    // std::cout << "RUNNING!" << std::endl;
 
     // remove the last quadratic
+    (*qi).reset();
     Q.ps.pop_back();
 
-    std::cout << "PRUNED!" << std::endl;
+    // std::cout << "PRUNED!" << std::endl;
 
     if (Q.ps.size() <= 1){
       break;
@@ -86,8 +86,8 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
     qi = Q.ps.rbegin();
 
 
-    std::cout << "This should be fine..." << (*qi)->argmax(cs) << std::endl;
-    std::cout << "I think that here's the bug..." << (*std::next(qi, 1))->argmax(cs) << std::endl;
+    // std::cout << "This should be fine..." << (*qi)->argmax(cs) << std::endl;
+    // std::cout << "I think that here's the bug..." << (*std::next(qi, 1))->argmax(cs) << std::endl;
 
 
   }
@@ -126,52 +126,50 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
  * focus recursion, one iteration
  */
 
-// here info is used by copy, not reference, to try with std::move later
-Info focus_step (Info I, const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
+void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)>& newP, const double& thres, const double& theta0, const bool& adp_max_check) {
 
   // updating the cusums and count with the new point
-  I.cs.n ++;
-  I.cs.Sn += y;
+  cs.n ++;
+  cs.Sn += y;
 
-  std::cout << "iteration: " << I.cs.n << std::endl;
-  std::cout << "cusum: " << I.cs.Sn << std::endl;
+  // std::cout << "iteration: " << cs.n << std::endl;
+  // std::cout << "cusum: " << cs.Sn << std::endl;
 
 
   // updating the value of the max of the null (for pre-change mean unkown)
   auto m0val = 0.0;
   if (std::isnan(theta0))
-    m0val = get_max(newP(0.0, 0, 0.0), I.cs, theta0);
+    m0val = get_max(newP(0.0, 0, 0.0), cs, theta0);
 
   // if (std::isnan(theta0)) {
-  //   m0val = get_max(newP, I.cs, theta0);
+  //   m0val = get_max(newP, cs, theta0);
   // }
 
-  std::cout << "m0val: " << m0val << std::endl;
+  // std::cout << "m0val: " << m0val << std::endl;
 
-  std::cout << "pruning step. size before pruning: " << I.Qr.ps.size() << std::endl;
+  // std::cout << "pruning step. size before pruning: " << Qr.ps.size() << std::endl;
 
   // pruning step
-  prune(I.Qr, I.cs, theta0, true); // true for the right pruning
-  prune(I.Ql, I.cs, theta0, false); // false for the left pruning
+  prune(Qr, cs, theta0, true); // true for the right pruning
+  prune(Ql, cs, theta0, false); // false for the left pruning
 
-  std::cout << "pruning step done. size after pruning: " << I.Qr.ps.size() << std::endl;
+  // std::cout << "pruning step done. size after pruning: " << Qr.ps.size() << std::endl;
 
 
   // check the maximum
   if (adp_max_check) {
-    std::cout << "to write " << std::endl;
+    // std::cout << "to write " << std::endl;
   } else {
 
-    I.Qr.opt = get_max_all(I.Qr, I.cs, theta0, m0val);
-    I.Ql.opt = get_max_all(I.Ql, I.cs, theta0, m0val);
+    Qr.opt = get_max_all(Qr, cs, theta0, m0val);
+    Ql.opt = get_max_all(Ql, cs, theta0, m0val);
   }
 
   // add a new point
-  I.Qr.ps.push_back(newP(I.cs.Sn, I.cs.n, m0val));
-  I.Ql.ps.push_back(newP(I.cs.Sn, I.cs.n, m0val));
+  Qr.ps.push_back(newP(cs.Sn, cs.n, m0val));
+  Ql.ps.push_back(newP(cs.Sn, cs.n, m0val));
 
 
-  std::cout << "__________________________" << std::endl;
+  // std::cout << "__________________________" << std::endl;
 
-  return I;
 }

@@ -36,7 +36,7 @@ struct PieceGau:Piece {
     auto c = (double)(cs.n - tau);
     auto S = (cs.Sn - St);
 
-    std::cout << "running gaussian" << std::endl;
+    // std::cout << "running gaussian" << std::endl;
 
     if (std::isnan(theta0))
       return - 0.5 * c * x * x + S * x + m0;
@@ -51,7 +51,7 @@ struct PieceBer:Piece {
     auto c = (double)(cs.n - tau);
     auto S = (cs.Sn - St);
 
-    std::cout << "running bernoulli" << std::endl;
+    // std::cout << "running bernoulli" << std::endl;
 
     if (std::isnan(theta0))
       return S * log(x) + (c - S) * log((1-x)) + m0;
@@ -79,6 +79,7 @@ struct Info {
   CUSUM cs;
   Cost Ql;
   Cost Qr;
+  void update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)>& newP, const double& thres, const double& theta0, const bool& adp_max_check);
 };
 
 
@@ -88,7 +89,6 @@ struct Info {
 // double eval (const PieceGau &q, const CUSUM &cs, double x, const double &theta0);
 // double eval (const PieceBer &q, const CUSUM &cs, double x, const double &theta0);
 // void prune (Cost &Q, const CUSUM &cs, const double &theta0, std::function<bool(Piece, Piece)> cond);
-//auto focus_step (auto I, const double& y, auto newP, const double& thres, const double& theta0, const bool& adp_max_check);
-Info focus_step (Info I, const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
+//Info focus_step (Info I, const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 
 #endif
