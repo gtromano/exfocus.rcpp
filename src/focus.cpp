@@ -33,28 +33,28 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 
   // this sets the condition
-  std::function<bool(std::shared_ptr<Piece>, std::shared_ptr<Piece>)> cond;
+  std::function<bool(const std::unique_ptr<Piece>&, const std::unique_ptr<Piece>&)> cond;
 
   if (std::isnan(theta0)) {
     if (isRight) {
-      cond = [cs, theta0](std::shared_ptr<Piece> q1, std::shared_ptr<Piece> q2)
+      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
       {
         return q1->argmax(cs) <= q2->argmax(cs);
       };
     } else {
-      cond = [cs, theta0](std::shared_ptr<Piece> q1, std::shared_ptr<Piece> q2)
+      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
       {
         return q1->argmax(cs) >= q2->argmax(cs);
       };
     }
   } else {
     if (isRight) {
-      cond = [cs, theta0](std::shared_ptr<Piece> q1, std::shared_ptr<Piece> q2)
+      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
       {
         return q1->argmax(cs) <= std::max(theta0, q2->argmax(cs));
       };
     } else {
-      cond = [cs, theta0](std::shared_ptr<Piece> q1, std::shared_ptr<Piece> q2)
+      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
       {
         return q1->argmax(cs) >= std::min(theta0, q2->argmax(cs));
       };
@@ -73,7 +73,7 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
     // std::cout << "RUNNING!" << std::endl;
 
     // remove the last quadratic
-    (*qi).reset();
+    //(*qi).reset();
     Q.ps.pop_back();
 
     // std::cout << "PRUNED!" << std::endl;
@@ -92,6 +92,7 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
   }
 
+
 }
 
 
@@ -101,7 +102,7 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 // get max of a single piece
 //template <typename T>
-double get_max (const std::shared_ptr<Piece>& q, const CUSUM& cs, const double& theta0) {
+double get_max (const std::unique_ptr<Piece>& q, const CUSUM& cs, const double& theta0) {
   //std::cout << q.eval(cs, argmax(q, cs), theta0) << std::endl;
   return q->eval(cs, q->argmax(cs), theta0);
 }
@@ -110,10 +111,15 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
 
   auto max = 0.0;
 
-  for (auto& q:Q.ps) {
-    max = std::max( 0.0, get_max(q, cs, theta0) - m0val );
+  std::cout << m0val << std::endl;
 
+  for (auto& q:Q.ps) {
+
+
+    max = std::max( max, get_max(q, cs, theta0) - m0val );
+    //std::cout << "tau: " << q->tau << " st: " << q->St << " m0: " << q->m0 << " max-m0val: "<< max<< " | \n";
   }
+  std::cout << std::endl;
 
   return max;
 }
@@ -126,24 +132,20 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
  * focus recursion, one iteration
  */
 
-void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
+void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
 
   // updating the cusums and count with the new point
   cs.n ++;
   cs.Sn += y;
 
-  // std::cout << "iteration: " << cs.n << std::endl;
-  // std::cout << "cusum: " << cs.Sn << std::endl;
+  std::cout << "iteration: " << cs.n << std::endl;
+  std::cout << "cusum: " << cs.Sn << std::endl;
 
 
   // updating the value of the max of the null (for pre-change mean unkown)
   auto m0val = 0.0;
   if (std::isnan(theta0))
     m0val = get_max(Qr.ps.front(), cs, theta0);
-
-  // if (std::isnan(theta0)) {
-  //   m0val = get_max(newP, cs, theta0);
-  // }
 
   // std::cout << "m0val: " << m0val << std::endl;
 
@@ -160,16 +162,21 @@ void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, 
   if (adp_max_check) {
     // std::cout << "to write " << std::endl;
   } else {
+    std::cout << "Qr maxs" << std::endl;
 
     Qr.opt = get_max_all(Qr, cs, theta0, m0val);
+    std::cout << "Ql maxs" << std::endl;
+
     Ql.opt = get_max_all(Ql, cs, theta0, m0val);
   }
+
+  std::cout << "Qr opt: " << Qr.opt << " Ql opt: " << Ql.opt << std::endl;
 
   // add a new point
   Qr.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
   Ql.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
 
 
-  // std::cout << "__________________________" << std::endl;
+  std::cout << "__________________________" << std::endl;
 
 }

@@ -71,7 +71,7 @@ struct PieceGam:Piece {
 
 // the cost is a list of shared pointers to pieces of type Piece
 struct Cost {
-  std::list<std::shared_ptr<Piece>> ps;
+  std::list<std::unique_ptr<Piece>> ps;
   double opt = 0;
 };
 
@@ -79,7 +79,7 @@ struct Info {
   CUSUM cs;
   Cost Ql;
   Cost Qr;
-  void update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
+  void update(const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 };
 
 
@@ -89,6 +89,6 @@ struct Info {
 // double eval (const PieceGau &q, const CUSUM &cs, double x, const double &theta0);
 // double eval (const PieceBer &q, const CUSUM &cs, double x, const double &theta0);
 // void prune (Cost &Q, const CUSUM &cs, const double &theta0, std::function<bool(Piece, Piece)> cond);
-//Info focus_step (Info I, const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
+//Info focus_step (Info I, const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 
 #endif
