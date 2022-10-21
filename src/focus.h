@@ -2,7 +2,8 @@
 #define ___FCOST_H___
 
 #include <iostream>
-#include <list>
+//#include <list>
+#include <vector>
 #include <numeric>      // std::iota
 #include <cmath>
 //#include <algorithm>
@@ -71,8 +72,9 @@ struct PieceGam:Piece {
 
 // the cost is a list of shared pointers to pieces of type Piece
 struct Cost {
-  std::list<std::unique_ptr<Piece>> ps;
+  std::vector<std::unique_ptr<Piece>> ps;
   double opt = 0;
+  int k = 0; // index of the last optimal piece in the vector
 };
 
 struct Info {

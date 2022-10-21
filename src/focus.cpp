@@ -27,8 +27,8 @@
 
 void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) {
 
-  // if we only have one or zero pieces, exit
-  if (Q.ps.size() <= 1)
+  // if we only have one piece, exit
+  if (Q.k == 0)
     return ;
 
 
@@ -64,27 +64,22 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 
   // reverse iterator at the end of the list
-  auto qi = Q.ps.rbegin();
+  // auto qi = Q.ps.rbegin();
 
 
   // compare the last two quadratics
-  while (cond((*qi), (*std::next(qi, 1)))) {
+  while (cond(Q.ps[Q.k], Q.ps[Q.k - 1])) {
 
     // std::cout << "RUNNING!" << std::endl;
 
-    // remove the last quadratic
-    //(*qi).reset();
-    Q.ps.pop_back();
+    // prune the last quadratic (we just drop the k value of one and we overwrite the other quadratics)
+    Q.k--;
 
     // std::cout << "PRUNED!" << std::endl;
 
-    if (Q.ps.size() <= 1){
+    if (Q.k == 0){
       break;
     }
-
-    // reset the iterator to the last element
-    qi = Q.ps.rbegin();
-
 
     // std::cout << "This should be fine..." << (*qi)->argmax(cs) << std::endl;
     // std::cout << "I think that here's the bug..." << (*std::next(qi, 1))->argmax(cs) << std::endl;
@@ -111,15 +106,15 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
 
   auto max = 0.0;
 
-  std::cout << m0val << std::endl;
+  // std::cout << m0val << std::endl;
 
-  for (auto& q:Q.ps) {
+  for (auto i = 0; i <= Q.k; i++) {
 
 
-    max = std::max( max, get_max(q, cs, theta0) - m0val );
+    max = std::max( max, get_max(Q.ps[i], cs, theta0) - m0val );
     //std::cout << "tau: " << q->tau << " st: " << q->St << " m0: " << q->m0 << " max-m0val: "<< max<< " | \n";
   }
-  std::cout << std::endl;
+  // std::cout << std::endl;
 
   return max;
 }
@@ -138,8 +133,8 @@ void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, 
   cs.n ++;
   cs.Sn += y;
 
-  std::cout << "iteration: " << cs.n << std::endl;
-  std::cout << "cusum: " << cs.Sn << std::endl;
+  // std::cout << "iteration: " << cs.n << std::endl;
+  // std::cout << "cusum: " << cs.Sn << std::endl;
 
 
   // updating the value of the max of the null (for pre-change mean unkown)
@@ -162,21 +157,41 @@ void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, 
   if (adp_max_check) {
     // std::cout << "to write " << std::endl;
   } else {
-    std::cout << "Qr maxs" << std::endl;
+    // std::cout << "Qr maxs" << std::endl;
 
     Qr.opt = get_max_all(Qr, cs, theta0, m0val);
-    std::cout << "Ql maxs" << std::endl;
+    // std::cout << "Ql maxs" << std::endl;
 
     Ql.opt = get_max_all(Ql, cs, theta0, m0val);
   }
 
-  std::cout << "Qr opt: " << Qr.opt << " Ql opt: " << Ql.opt << std::endl;
+  // std::cout << "Qr opt: " << Qr.opt << " Ql opt: " << Ql.opt << std::endl;
 
   // add a new point
-  Qr.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
-  Ql.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
+
+  if (Qr.k < (Qr.ps.size() - 1)) {
+    Qr.k ++; // incrase the counter of the last piece position
+    Qr.ps[Qr.k]->St = cs.Sn;
+    Qr.ps[Qr.k]->tau = cs.n;
+    Qr.ps[Qr.k]->m0 = m0val;
+  } else  {
+    Qr.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
+    Qr.k = Qr.ps.size() - 1; // incrase the counter of the last piece position
+  }
+
+  if (Ql.k < (Ql.ps.size() - 1)) {
+    Ql.k ++; // incrase the counter of the last piece position
+    Ql.ps[Ql.k]->St = cs.Sn;
+    Ql.ps[Ql.k]->tau = cs.n;
+    Ql.ps[Ql.k]->m0 = m0val;
+  } else  {
+    Ql.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
+    Ql.k = Ql.ps.size() - 1; // incrase the counter of the last piece position
+
+  }
 
 
-  std::cout << "__________________________" << std::endl;
+
+  // std::cout << "__________________________" << std::endl;
 
 }

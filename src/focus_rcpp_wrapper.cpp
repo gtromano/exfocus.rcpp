@@ -36,14 +36,22 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
   //std::unique_ptr<Piece> test = newP(0.0, 0, 0.0);
 
-  // initialization of the info list
-  std::list<std::unique_ptr<Piece>> initpsl;
-  initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
-  Cost initQl(std::move(initpsl), 0.0);
+  // initialization of the info vector. Default size  20.
+  std::vector<std::unique_ptr<Piece>> initpsl;
+  for (auto i = 0; i<50; i++) {
+    initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
+  }
 
-  std::list<std::unique_ptr<Piece>> initpsr;
-  initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
-  Cost initQr(std::move(initpsr), 0.0);
+
+  std::vector<std::unique_ptr<Piece>> initpsr;
+  for (auto i = 0; i<50; i++) {
+    initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
+  }
+
+
+
+  Cost initQl(std::move(initpsl), 0.0, 0);
+  Cost initQr(std::move(initpsr), 0.0, 0);
 
   CUSUM initcusum;
   Info info(initcusum, std::move(initQl), std::move(initQr));
@@ -62,13 +70,19 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
   std::list<double> stat;
   std::list<int> qlsize;
   std::list<int> qrsize;
+  std::list<int> rk;
+  std::list<int> lk;
+
 
   for (auto& y:Y) {
     info.update(y, newP, threshold, theta0, adp_max_check);
-    stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
+    // stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
+    //
+    // qlsize.push_back(info.Ql.ps.size());
+    // qrsize.push_back(info.Qr.ps.size());
+    // rk.push_back(info.Qr.k);
+    // lk.push_back(info.Ql.k);
 
-    qlsize.push_back(info.Ql.ps.size());
-    qrsize.push_back(info.Qr.ps.size());
 
     if (stat.back() >= threshold)
       break;
@@ -76,7 +90,9 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
   return List::create(Rcpp::Named("stat") = stat,
                       Rcpp::Named("qrsize") = qrsize,
-                      Rcpp::Named("qlsize") = qlsize);
+                      Rcpp::Named("qlsize") = qlsize,
+                      Rcpp::Named("rk") = rk,
+                      Rcpp::Named("lk") = lk);
 
 }
 
@@ -90,12 +106,12 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 /*** R
 theta0 <- 0
 set.seed(42)
-Y <- c(rnorm(5, theta0), rnorm(5, theta0 - 1))
+Y <- c(rnorm(1e8, theta0), rnorm(500, theta0 - 1))
 
 library(focus.new)
-res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F)
-res$stat
-plot(res$stat, type = "l")
+system.time(res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F))
+#res$stat
+#plot(res$stat, type = "l")
 
 # library(FOCuS)
 # system.time(res <- FOCuS(Y, 50))
