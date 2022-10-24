@@ -33,28 +33,28 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 
   // this sets the condition
-  std::function<bool(const std::unique_ptr<Piece>&, const std::unique_ptr<Piece>&)> cond;
+  std::function<bool(const std::shared_ptr<Piece>&, const std::shared_ptr<Piece>&)> cond;
 
   if (std::isnan(theta0)) {
     if (isRight) {
-      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
+      cond = [cs, theta0](const std::shared_ptr<Piece>& q1, const std::shared_ptr<Piece>& q2)
       {
         return q1->argmax(cs) <= q2->argmax(cs);
       };
     } else {
-      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
+      cond = [cs, theta0](const std::shared_ptr<Piece>& q1, const std::shared_ptr<Piece>& q2)
       {
         return q1->argmax(cs) >= q2->argmax(cs);
       };
     }
   } else {
     if (isRight) {
-      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
+      cond = [cs, theta0](const std::shared_ptr<Piece>& q1, const std::shared_ptr<Piece>& q2)
       {
         return q1->argmax(cs) <= std::max(theta0, q2->argmax(cs));
       };
     } else {
-      cond = [cs, theta0](const std::unique_ptr<Piece>& q1, const std::unique_ptr<Piece>& q2)
+      cond = [cs, theta0](const std::shared_ptr<Piece>& q1, const std::shared_ptr<Piece>& q2)
       {
         return q1->argmax(cs) >= std::min(theta0, q2->argmax(cs));
       };
@@ -102,7 +102,7 @@ void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) 
 
 // get max of a single piece
 //template <typename T>
-double get_max (const std::unique_ptr<Piece>& q, const CUSUM& cs, const double& theta0) {
+double get_max (const std::shared_ptr<Piece>& q, const CUSUM& cs, const double& theta0) {
   //std::cout << q.eval(cs, argmax(q, cs), theta0) << std::endl;
   return q->eval(cs, q->argmax(cs), theta0);
 }
@@ -132,7 +132,7 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
  * focus recursion, one iteration
  */
 
-void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
+void Info::update(const double& y, std::function<std::shared_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check) {
 
   // updating the cusums and count with the new point
   cs.n ++;

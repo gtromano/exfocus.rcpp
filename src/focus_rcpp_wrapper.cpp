@@ -12,11 +12,11 @@ NumericVector timesTwo(NumericVector x) {
 List focus_offline (NumericVector Y, double threshold, String family, double theta0, List args, bool adp_max_check) {
 
   // here we define the function to initialize a new piece
-  std::function<std::unique_ptr<Piece>(double, int, double)> newP;
+  std::function<std::shared_ptr<Piece>(double, int, double)> newP;
 
   if (family == "gaussian") {
     newP = [](double St, int tau, double m0){
-      std::unique_ptr<Piece> p = std::make_unique<PieceGau>();
+      std::shared_ptr<Piece> p = std::make_shared<PieceGau>();
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
@@ -25,7 +25,7 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
     };
   } else if (family == "bernoulli") {
     newP = [](double St, int tau, double m0){
-      std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
+      std::shared_ptr<Piece> p = std::make_shared<PieceBer>();
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
@@ -34,16 +34,16 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
     };
   }
 
-  //std::unique_ptr<Piece> test = newP(0.0, 0, 0.0);
+  //std::shared_ptr<Piece> test = newP(0.0, 0, 0.0);
 
   // initialization of the info list
-  std::list<std::unique_ptr<Piece>> initpsl;
-  initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
-  Cost initQl(std::move(initpsl), 0.0);
+  std::list<std::shared_ptr<Piece>> initpsl;
+  initpsl.push_back(newP(0.0, 0, 0.0));
+  Cost initQl(initpsl, 0.0);
 
-  std::list<std::unique_ptr<Piece>> initpsr;
-  initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
-  Cost initQr(std::move(initpsr), 0.0);
+  std::list<std::shared_ptr<Piece>> initpsr;
+  initpsr.push_back(newP(0.0, 0, 0.0));
+  Cost initQr(initpsr, 0.0);
 
   CUSUM initcusum;
   Info info(initcusum, std::move(initQl), std::move(initQr));
@@ -90,15 +90,14 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 /*** R
 theta0 <- 0
 set.seed(42)
-Y <- c(rnorm(1e8, theta0), rnorm(500, theta0 - 1))
+Y <- c(rnorm(1e6, theta0), rnorm(500, theta0 - 1))
 
 library(focus.new)
 system.time(res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F))
 res$stat
 plot(res$stat, type = "l")
 
-# library(FOCuS)
-# system.time(res <- FOCuS(Y, 50))
-
+library(microbenchmark)
+microbenchmark(focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F))
 
 */
