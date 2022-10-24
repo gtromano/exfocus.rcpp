@@ -111,7 +111,7 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
 
   auto max = 0.0;
 
-  std::cout << m0val << std::endl;
+  //std::cout << m0val << std::endl;
 
   for (auto& q:Q.ps) {
 
@@ -119,7 +119,7 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
     max = std::max( max, get_max(q, cs, theta0) - m0val );
     //std::cout << "tau: " << q->tau << " st: " << q->St << " m0: " << q->m0 << " max-m0val: "<< max<< " | \n";
   }
-  std::cout << std::endl;
+  //std::cout << std::endl;
 
   return max;
 }
@@ -138,8 +138,8 @@ void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, 
   cs.n ++;
   cs.Sn += y;
 
-  std::cout << "iteration: " << cs.n << std::endl;
-  std::cout << "cusum: " << cs.Sn << std::endl;
+  //std::cout << "iteration: " << cs.n << std::endl;
+  //std::cout << "cusum: " << cs.Sn << std::endl;
 
 
   // updating the value of the max of the null (for pre-change mean unkown)
@@ -162,21 +162,21 @@ void Info::update(const double& y, std::function<std::unique_ptr<Piece>(double, 
   if (adp_max_check) {
     // std::cout << "to write " << std::endl;
   } else {
-    std::cout << "Qr maxs" << std::endl;
+    //std::cout << "Qr maxs" << std::endl;
 
     Qr.opt = get_max_all(Qr, cs, theta0, m0val);
-    std::cout << "Ql maxs" << std::endl;
+    //std::cout << "Ql maxs" << std::endl;
 
     Ql.opt = get_max_all(Ql, cs, theta0, m0val);
   }
 
-  std::cout << "Qr opt: " << Qr.opt << " Ql opt: " << Ql.opt << std::endl;
+  //std::cout << "Qr opt: " << Qr.opt << " Ql opt: " << Ql.opt << std::endl;
 
   // add a new point
   Qr.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
   Ql.ps.push_back(std::move(newP(cs.Sn, cs.n, m0val)));
 
 
-  std::cout << "__________________________" << std::endl;
+  //std::cout << "__________________________" << std::endl;
 
 }

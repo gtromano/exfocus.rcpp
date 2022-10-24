@@ -65,10 +65,10 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
   for (auto& y:Y) {
     info.update(y, newP, threshold, theta0, adp_max_check);
-    stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
-
-    qlsize.push_back(info.Ql.ps.size());
-    qrsize.push_back(info.Qr.ps.size());
+    // stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
+    //
+    // qlsize.push_back(info.Ql.ps.size());
+    // qrsize.push_back(info.Qr.ps.size());
 
     if (stat.back() >= threshold)
       break;
@@ -90,10 +90,10 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 /*** R
 theta0 <- 0
 set.seed(42)
-Y <- c(rnorm(5, theta0), rnorm(5, theta0 - 1))
+Y <- c(rnorm(1e8, theta0), rnorm(500, theta0 - 1))
 
 library(focus.new)
-res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F)
+system.time(res <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, args = list(), adp_max_check = F))
 res$stat
 plot(res$stat, type = "l")
 
