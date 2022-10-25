@@ -110,9 +110,8 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
 
   for (auto i = 0; i <= Q.k; i++) {
 
-
     max = std::max( max, get_max(Q.ps[i], cs, theta0) - m0val );
-    //std::cout << "tau: " << q->tau << " st: " << q->St << " m0: " << q->m0 << " max-m0val: "<< max<< " | \n";
+    // std::cout << "tau: " << Q.ps[i]->tau << " st: " << Q.ps[i]->St << " m0: " << Q.ps[i]->m0 << " max-m0val: "<< max<< " | \n";
   }
   // std::cout << std::endl;
 

@@ -60,6 +60,19 @@ struct PieceBer:Piece {
       return S * log(x/theta0) + (c - S) * log((1-x) / (1 - theta0));
 
   }
+  // this is to avoid nans that might be quite annoying in comparisons
+  double argmax (const CUSUM &cs ) const {
+    auto agm = (cs.Sn - St) / (double)(cs.n - tau);
+    if (agm == 0) {
+      return 0.000000001;
+    } else if (agm == 1) {
+      return 0.99999999;
+    } else {
+      return agm;
+    }
+
+  }
+
 };
 
 struct PiecePoi:Piece {
@@ -82,6 +95,24 @@ struct Info {
   Cost Ql;
   Cost Qr;
   void update(const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
+  Info(std::function<std::unique_ptr<Piece>(double, int, double)> newP) {
+    // initialization of the info vector. Default size  20.
+    std::vector<std::unique_ptr<Piece>> initpsl;
+    for (auto i = 0; i<50; i++) {
+      initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
+    }
+    std::vector<std::unique_ptr<Piece>> initpsr;
+    for (auto i = 0; i<50; i++) {
+      initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
+    }
+    Cost initQl(std::move(initpsl), 0.0, 0);
+    Cost initQr(std::move(initpsr), 0.0, 0);
+    Ql = std::move(initQl);
+    Qr = std::move(initQr);
+
+    CUSUM initcusum;
+    cs = initcusum;
+  }
 };
 
 
