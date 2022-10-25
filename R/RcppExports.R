@@ -9,3 +9,7 @@ focus_offline <- function(Y, threshold, family, theta0, args, adp_max_check) {
     .Call(`_focus_new_focus_offline`, Y, threshold, family, theta0, args, adp_max_check)
 }
 
+.npfocus_offline <- function(Y, quants, theta0, args, adp_max_check) {
+    .Call(`_focus_new_npfocus_offline`, Y, quants, theta0, args, adp_max_check)
+}
+

@@ -34,28 +34,6 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
     };
   }
 
-  //std::unique_ptr<Piece> test = newP(0.0, 0, 0.0);
-
-  // initialization of the info vector. Default size  20.
-  // std::vector<std::unique_ptr<Piece>> initpsl;
-  // for (auto i = 0; i<50; i++) {
-  //   initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
-  // }
-  //
-  //
-  // std::vector<std::unique_ptr<Piece>> initpsr;
-  // for (auto i = 0; i<50; i++) {
-  //   initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
-  // }
-  //
-  //
-  //
-  // Cost initQl(std::move(initpsl), 0.0, 0);
-  // Cost initQr(std::move(initpsr), 0.0, 0);
-  //
-  // CUSUM initcusum;
-  // Info info(initcusum, std::move(initQl), std::move(initQr));
-
   // new init with constructor
   Info info(newP);
 
@@ -64,11 +42,6 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
     Y = Y - theta0;
     theta0 = 0;
   }
-
-  // test
-  //info.Ql.ps.front()->eval(info.cs, 1.0, 0.0);
-  //info.Ql.ps.back()->eval(info.cs, 1.0, 0.0);
-
 
   std::list<double> stat;
   std::list<int> qlsize;
@@ -104,47 +77,40 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 // the following function will run NP-FOCuS in an offline setting.
 // It will run Ber-FOCuS for all quantiles independently for 1(x < q) and record the result
 // It will finally output a matrix of all the statistics for the independent quantiles, to be later analysed in R
-// // [[Rcpp::export]]
-// NumericMatrix npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
-//
-//   auto pre_change_ukn = std::isnan(theta0[0]);
-//
-//   // auto nr = quants.size();
-//   // auto nc = Y.size();
-//
-//   NumericMatrix focus_stats(nr, nc);
-//
-//   std::function<std::unique_ptr<Piece>(double, int, double)> newP = [](double St, int tau, double m0){
-//     std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
-//     p->St = St;
-//     p->tau = tau;
-//     p->m0 = m0;
-//
-//     return p;
-//   };
-//
-//   // pre-change mean unkown call
-//   if (pre_change_ukn) {
-//
-//     auto q_index = 0;
-//     for (auto q:quants) {
-//
-//
-//
-//       for (auto y:Y) {
-//         info.update(y, newP, INFINITY, theta0, adp_max_check);
-//         stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
-//       }
-//     }
-//
-//   // pre-change mean known call
-//   } else {
-//
-//   }
-//
-//
-//
-// }
+// [[Rcpp::export(.npfocus_offline)]]
+NumericMatrix npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
+
+  auto pre_change_ukn = std::isnan(theta0[0]);
+
+  NumericMatrix focus_stats(quants.size(), Y.size());
+
+  std::function<std::unique_ptr<Piece>(double, int, double)> newP = [](double St, int tau, double m0){
+    std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
+    p->St = St;
+    p->tau = tau;
+    p->m0 = m0;
+
+    return p;
+  };
+
+
+
+  auto q_in = 0;
+  for (auto q:quants) {
+      // initializing a new info with bernoulli cost
+    Info info(newP);
+    auto y_in = 0;
+    for (auto y:Y) {
+      info.update((y <= q), newP, INFINITY, theta0[q_in], adp_max_check);
+      focus_stats(q_in, y_in) = std::max(info.Ql.opt, info.Qr.opt);
+      y_in++; // update counter for the observations
+    }
+    q_in++; // update counter for the quantiles
+  }
+
+  return focus_stats;
+
+}
 
 
 // You can include R code blocks in C++ files processed with sourceCpp
@@ -173,5 +139,13 @@ head(res$stat, 5)
 tail(res$stat)
 
 plot(res$stat)
+
+
+#### npfocus ####
+
+theta0 <- 0
+set.seed(45)
+Y <- c(rnorm(1e3, theta0), rnorm(500, theta0 - 1))
+
 
 */
