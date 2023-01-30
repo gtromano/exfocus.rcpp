@@ -30,6 +30,10 @@ struct Piece {
     return (cs.Sn - St) / (double)(cs.n - tau);
   }
 
+  virtual void set_shape (double s) {
+   throw("This is only to set a gamma shape");
+  };
+
 };
 
 struct PieceGau:Piece {
@@ -81,6 +85,25 @@ struct PiecePoi:Piece {
 
 struct PieceGam:Piece {
   double shape = 1.0;
+  double eval (const CUSUM& cs, double x, const double& theta0) const {
+    auto c = (double)(cs.n - tau);
+    auto S = (cs.Sn - St);
+
+    if (std::isnan(theta0))
+      return -c * shape * log(x) - S * (1/x) + m0;
+    else
+      return c * shape * log(theta0/x) - S * (1/x - 1/theta0);
+
+  }
+
+  void set_shape(double s) {
+    shape = s;
+  }
+
+  double argmax (const CUSUM &cs ) const {
+    return (cs.Sn - St) / ( shape * (double)(cs.n - tau));
+  }
+
 };
 
 // the cost is a list of shared pointers to pieces of type Piece

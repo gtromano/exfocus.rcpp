@@ -32,6 +32,16 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
 
       return p;
     };
+  } else if (family == "gamma") {
+    auto shape_arg = args["shape"];
+    newP = [shape_arg](double St, int tau, double m0){
+      std::unique_ptr<Piece> p = std::make_unique<PieceGam>();
+      p->St = St;
+      p->tau = tau;
+      p->m0 = m0;
+      p->set_shape(shape_arg);
+      return p;
+    };
   }
 
   // new init with constructor
@@ -139,6 +149,16 @@ head(res$stat, 5)
 tail(res$stat)
 
 plot(res$stat)
+
+
+#### gamma ####
+theta0 <- 4
+shape <- 4
+set.seed(42)
+Y <- c(rgamma(500, rate = theta0, shape = shape), rgamma(500, rate = theta0 - 1, shape = shape))
+
+system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = 1/theta0, args = list(shape = 4), adp_max_check = F))
+plot(res$stat, type = "l")
 
 
 #### npfocus ####
