@@ -80,6 +80,27 @@ struct PieceBer:Piece {
 };
 
 struct PiecePoi:Piece {
+  double eval (const CUSUM& cs, double x, const double& theta0) const {
+    auto c = (double)(cs.n - tau);
+    auto S = (cs.Sn - St);
+
+    if (std::isnan(theta0))
+      return - c * (x) + S * log(x) + m0;
+    else
+      return -c * (x - theta0) + S * log(x/theta0);
+
+  }
+
+  // this is to avoid nans that might be quite annoying in comparisons
+  double argmax (const CUSUM &cs ) const {
+    auto agm = (cs.Sn - St) / (double)(cs.n - tau);
+    if (agm == 0) {
+      return 0.000000001;
+    } else {
+      return agm;
+    }
+  }
+
 
 };
 

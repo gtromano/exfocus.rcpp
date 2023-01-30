@@ -42,6 +42,15 @@ List focus_offline (NumericVector Y, double threshold, String family, double the
       p->set_shape(shape_arg);
       return p;
     };
+  } else if (family == "poisson") {
+    newP = [](double St, int tau, double m0){
+      std::unique_ptr<Piece> p = std::make_unique<PiecePoi>();
+      p->St = St;
+      p->tau = tau;
+      p->m0 = m0;
+
+      return p;
+    };
   }
 
   // new init with constructor
@@ -160,6 +169,14 @@ Y <- c(rgamma(500, rate = theta0, shape = shape), rgamma(500, rate = theta0 - 1,
 system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = 1/theta0, args = list(shape = 4), adp_max_check = F))
 plot(res$stat, type = "l")
 
+
+### poisson ####
+theta0 <- 2
+set.seed(42)
+Y <- c(rpois(500, theta0), rpois(500, 1.5))
+
+system.time(res <- focus_offline(Y, 50, family = "poisson", theta0 = theta0, args = list(shape = 4), adp_max_check = F))
+plot(res$stat, type = "l")
 
 #### npfocus ####
 
