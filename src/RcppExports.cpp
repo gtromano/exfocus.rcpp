@@ -10,30 +10,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// timesTwo
-NumericVector timesTwo(NumericVector x);
-RcppExport SEXP _focus_new_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // focus_offline
-List focus_offline(NumericVector Y, double threshold, String family, double theta0, List args, bool adp_max_check);
-RcppExport SEXP _focus_new_focus_offline(SEXP YSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
+List focus_offline(NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check);
+RcppExport SEXP _focus_new_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Z(ZSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
     Rcpp::traits::input_parameter< String >::type family(familySEXP);
     Rcpp::traits::input_parameter< double >::type theta0(theta0SEXP);
     Rcpp::traits::input_parameter< List >::type args(argsSEXP);
     Rcpp::traits::input_parameter< bool >::type adp_max_check(adp_max_checkSEXP);
-    rcpp_result_gen = Rcpp::wrap(focus_offline(Y, threshold, family, theta0, args, adp_max_check));
+    rcpp_result_gen = Rcpp::wrap(focus_offline(Z, threshold, family, theta0, args, adp_max_check));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -54,7 +43,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_focus_new_timesTwo", (DL_FUNC) &_focus_new_timesTwo, 1},
     {"_focus_new_focus_offline", (DL_FUNC) &_focus_new_focus_offline, 6},
     {"_focus_new_npfocus_offline", (DL_FUNC) &_focus_new_npfocus_offline, 5},
     {NULL, NULL, 0}

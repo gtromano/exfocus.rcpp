@@ -1,29 +1,15 @@
-# include "focus.h"
-
 /*
- * ARGMAX FUNCTIONS NOW DEFINED IN METHODS!
- *
- * return the argmax of a given piece (needed for pruning and checkin the max)
- *
+ This code and all the code in this package is publicly released
+ under the license GPL 3.0 available at https://cran.r-project.org/web/licenses/GPL-3
+ See DESCRIPTION for further information about the authors.
  */
 
-// double argmax (const Piece &q, const CUSUM &cs ) {
-//   return (cs.Sn - q.St) / (double)(cs.n - q.tau);
-// }
-//
-//
-// double argmax (const PieceGam &q, const CUSUM &cs ) {
-//   return q.shape * (double)(cs.n - q.tau) / (cs.Sn - q.St);
-// }
-
-
-// missing exceptions for piece ber and piece poi
+# include "focus.h"
 
 
 /*
  * PRUNING FUNCTION checks and removes quadratics that are no longer optimal
  */
-
 
 void prune (Cost& Q, const CUSUM& cs, const double& theta0, const bool isRight) {
 

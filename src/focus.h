@@ -1,3 +1,9 @@
+/*
+ This and all the code in this package is publicly released
+ under the license GPL 3.0 available at https://cran.r-project.org/web/licenses/GPL-3
+ See DESCRIPTION for further information about the authors.
+ */
+
 #ifndef ___FCOST_H___
 #define ___FCOST_H___
 

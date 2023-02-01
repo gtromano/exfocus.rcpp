@@ -1,15 +1,17 @@
+/*
+ This code and all the code in this package is publicly released
+ under the license GPL 3.0 available at https://cran.r-project.org/web/licenses/GPL-3
+ See DESCRIPTION for further information about the authors.
+ */
+
 #include <Rcpp.h>
 #include "focus.h"
 using namespace Rcpp;
 
-
 // [[Rcpp::export]]
-NumericVector timesTwo(NumericVector x) {
-  return x * 2;
-}
+List focus_offline (NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check) {
 
-// [[Rcpp::export]]
-List focus_offline (NumericVector Y, double threshold, String family, double theta0, List args, bool adp_max_check) {
+  auto Y = clone(Z);
 
   // here we define the function to initialize a new piece
   std::function<std::unique_ptr<Piece>(double, int, double)> newP;
