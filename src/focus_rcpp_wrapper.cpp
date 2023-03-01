@@ -99,12 +99,13 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
 // It will run Ber-FOCuS for all quantiles independently for 1(x < q) and record the result
 // It will finally output a matrix of all the statistics for the independent quantiles, to be later analysed in R
 // [[Rcpp::export(.npfocus_offline)]]
-NumericMatrix npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
+List npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
 
   auto pre_change_ukn = std::isnan(theta0[0]);
 
   NumericMatrix focus_stats(quants.size(), Y.size());
-
+  NumericMatrix tau_stats(quants.size(), Y.size());
+  
   std::function<std::unique_ptr<Piece>(double, int, double)> newP = [](double St, int tau, double m0){
     std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
     p->St = St;
@@ -124,12 +125,18 @@ NumericMatrix npfocus_offline(NumericVector Y, const std::vector<double> quants,
     for (auto y:Y) {
       info.update((y <= q), newP, INFINITY, theta0[q_in], adp_max_check);
       focus_stats(q_in, y_in) = std::max(info.Ql.opt, info.Qr.opt);
+      if( info.Qr.opt > info.Ql.opt ){
+	tau_stats(q_in, y_in) = get_tau_max(info.Qr, info.cs, theta0[q_in], 0.0);
+      }else{
+	tau_stats(q_in, y_in) = get_tau_max(info.Ql, info.cs, theta0[q_in], 0.0);
+      }
       y_in++; // update counter for the observations
     }
     q_in++; // update counter for the quantiles
   }
 
-  return focus_stats;
+  return List::create(Rcpp::Named("focus_stat") = focus_stats,
+		      Rcpp::Named("tau_stat") = tau_stats);
 
 }
 

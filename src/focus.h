@@ -165,7 +165,7 @@ struct Info {
   }
 };
 
-
+int get_tau_max (const Cost&, const CUSUM&, const double& , const double&);
 // double argmax (const Piece &q, const CUSUM &cs );
 // double argmax (const PieceGam &q, const CUSUM &cs );
 //
