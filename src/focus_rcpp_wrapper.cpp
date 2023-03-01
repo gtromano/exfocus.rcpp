@@ -59,7 +59,7 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
   Info info(newP);
 
   // this is a temporary fix for the gaussian cost
-  if (family == "gaussian" & !std::isnan(theta0)) {
+  if ( (family == "gaussian") & !std::isnan(theta0)) {
     Y = Y - theta0;
     theta0 = 0;
   }
@@ -101,7 +101,7 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
 // [[Rcpp::export(.npfocus_offline)]]
 List npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
 
-  auto pre_change_ukn = std::isnan(theta0[0]);
+  //auto pre_change_ukn = std::isnan(theta0[0]);
 
   NumericMatrix focus_stats(quants.size(), Y.size());
   NumericMatrix tau_stats(quants.size(), Y.size());

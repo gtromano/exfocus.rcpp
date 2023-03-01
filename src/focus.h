@@ -137,7 +137,7 @@ struct PieceGam:Piece {
 struct Cost {
   std::vector<std::unique_ptr<Piece>> ps;
   double opt = 0;
-  int k = 0; // index of the last optimal piece in the vector
+  long unsigned int k = 0; // index of the last optimal piece in the vector
 };
 
 struct Info {
