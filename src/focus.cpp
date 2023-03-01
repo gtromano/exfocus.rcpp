@@ -90,11 +90,9 @@ double get_max (const std::unique_ptr<Piece>& q, const CUSUM& cs, const double& 
 
 double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const double& m0val) {
 
-  auto max = 0.0;
+  double max = -INFINITY; //std::numeric_limits<double>::lowest();
 
-  // std::cout << m0val << std::endl;
-
-  for (auto i = 0; i <= Q.k; i++) {
+  for (long unsigned int i = 0; i <= Q.k; i++) {
 
     max = std::max( max, get_max(Q.ps[i], cs, theta0) - m0val );
     // std::cout << "tau: " << Q.ps[i]->tau << " st: " << Q.ps[i]->St << " m0: " << Q.ps[i]->m0 << " max-m0val: "<< max<< " | \n";
@@ -103,6 +101,22 @@ double get_max_all (const Cost& Q, const CUSUM& cs, const double& theta0, const 
 
   return max;
 }
+
+int get_tau_max (const Cost& Q, const CUSUM& cs, const double& theta0, const double& m0val) {
+
+  auto tau = 0;
+  double max = -INFINITY;
+  
+  for (long unsigned int i = 0; i <= Q.k; i++) {
+    
+    if( max< get_max(Q.ps[i], cs, theta0) - m0val ){
+      tau = Q.ps[i]->tau;
+    } 
+  }
+  
+  return tau;
+}
+
 
 
 // to write the adaptive maxima checking

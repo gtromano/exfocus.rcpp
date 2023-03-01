@@ -27,7 +27,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // npfocus_offline
-NumericMatrix npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check);
+List npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check);
 RcppExport SEXP _focus_new_npfocus_offline(SEXP YSEXP, SEXP quantsSEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

@@ -1,13 +1,14 @@
 Package: focus.new
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.1
+Version: 0.1.2
 Author: Who wrote it
 Maintainer: Gaetano Romano <g.romano@lancaster.ac.uk>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: License: GPL-3
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.8.3)
 LinkingTo: Rcpp
+RoxygenNote: 7.2.3
