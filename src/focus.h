@@ -136,6 +136,7 @@ struct PieceGam:Piece {
 // the cost is a list of shared pointers to pieces of type Piece
 struct Cost {
   std::vector<std::unique_ptr<Piece>> ps;
+
   double opt = 0;
   int k = 0; // index of the last optimal piece in the vector
 };
@@ -164,14 +165,5 @@ struct Info {
     cs = initcusum;
   }
 };
-
-
-// double argmax (const Piece &q, const CUSUM &cs );
-// double argmax (const PieceGam &q, const CUSUM &cs );
-//
-// double eval (const PieceGau &q, const CUSUM &cs, double x, const double &theta0);
-// double eval (const PieceBer &q, const CUSUM &cs, double x, const double &theta0);
-// void prune (Cost &Q, const CUSUM &cs, const double &theta0, std::function<bool(Piece, Piece)> cond);
-//Info focus_step (Info I, const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
 
 #endif

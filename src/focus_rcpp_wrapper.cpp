@@ -14,11 +14,11 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
   auto Y = clone(Z);
 
   // here we define the function to initialize a new piece
-  std::function<std::unique_ptr<Piece>(double, int, double)> newP;
+  std::function<std::shared_ptr<Piece>(double, int, double)> newP;
 
   if (family == "gaussian") {
     newP = [](double St, int tau, double m0){
-      std::unique_ptr<Piece> p = std::make_unique<PieceGau>();
+      std::shared_ptr<Piece> p = std::make_shared<PieceGau>();
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
@@ -27,7 +27,7 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
     };
   } else if (family == "bernoulli") {
     newP = [](double St, int tau, double m0){
-      std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
+      std::shared_ptr<Piece> p = std::make_shared<PieceBer>();
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
@@ -79,6 +79,7 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
     qrsize.push_back(info.Qr.ps.size());
     rk.push_back(info.Qr.k);
     lk.push_back(info.Ql.k);
+
 
 
     if (stat.back() >= threshold)
@@ -176,7 +177,7 @@ plot(res$stat, type = "l")
 theta0 <- 2
 set.seed(42)
 Y <- c(rpois(500, theta0), rpois(500, 1.5))
-
+sssssssss
 system.time(res <- focus_offline(Y, 50, family = "poisson", theta0 = theta0, args = list(shape = 4), adp_max_check = F))
 plot(res$stat, type = "l")
 
