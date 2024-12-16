@@ -12,7 +12,7 @@ To install the package, please clone this repo, and run after entering the speci
 
 ```{r}
 install.packages(".", repos = NULL, type = "source")
-library(focus.new)
+library(exfocus.rcpp)
 ```
 
 # Gaussian

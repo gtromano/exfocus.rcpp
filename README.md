@@ -18,7 +18,7 @@ the specified directory:
 
 ``` r
 install.packages(".", repos = NULL, type = "source")
-library(focus.new)
+library(exfocus.rcpp)
 ```
 
 # Gaussian
@@ -94,7 +94,7 @@ system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = NaN, args = l
 ```
 
        user  system elapsed 
-      0.001   0.000   0.001 
+      0.001   0.000   0.000 
 
 ``` r
 plot(res$stat, type = "l")
@@ -133,7 +133,7 @@ system.time(res <- focus_offline(Y, 50, family = "bernoulli", theta0 = theta0, a
 ```
 
        user  system elapsed 
-      0.001   0.000   0.001 
+          0       0       0 
 
 ``` r
 plot(res$stat, type = "l")
