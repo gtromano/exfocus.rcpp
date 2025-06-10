@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 focus_offline <- function(Z, threshold, family, theta0, args, adp_max_check) {
-    .Call(`_focus_new_focus_offline`, Z, threshold, family, theta0, args, adp_max_check)
+    .Call(`_exfocus_rcpp_focus_offline`, Z, threshold, family, theta0, args, adp_max_check)
 }
 
 .npfocus_offline <- function(Y, quants, theta0, args, adp_max_check) {
-    .Call(`_focus_new_npfocus_offline`, Y, quants, theta0, args, adp_max_check)
+    .Call(`_exfocus_rcpp_npfocus_offline`, Y, quants, theta0, args, adp_max_check)
 }
 

@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // focus_offline
 List focus_offline(NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check);
-RcppExport SEXP _focus_new_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
+RcppExport SEXP _exfocus_rcpp_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -28,7 +28,7 @@ END_RCPP
 }
 // npfocus_offline
 List npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check);
-RcppExport SEXP _focus_new_npfocus_offline(SEXP YSEXP, SEXP quantsSEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
+RcppExport SEXP _exfocus_rcpp_npfocus_offline(SEXP YSEXP, SEXP quantsSEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -43,12 +43,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_focus_new_focus_offline", (DL_FUNC) &_focus_new_focus_offline, 6},
-    {"_focus_new_npfocus_offline", (DL_FUNC) &_focus_new_npfocus_offline, 5},
+    {"_exfocus_rcpp_focus_offline", (DL_FUNC) &_exfocus_rcpp_focus_offline, 6},
+    {"_exfocus_rcpp_npfocus_offline", (DL_FUNC) &_exfocus_rcpp_npfocus_offline, 5},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_focus_new(DllInfo *dll) {
+RcppExport void R_init_exfocus_rcpp(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
