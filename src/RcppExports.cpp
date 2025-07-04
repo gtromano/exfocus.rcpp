@@ -10,6 +10,41 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// detector_create
+SEXP detector_create(std::string family, double theta0, List args);
+RcppExport SEXP _exfocus_rcpp_detector_create(SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type family(familySEXP);
+    Rcpp::traits::input_parameter< double >::type theta0(theta0SEXP);
+    Rcpp::traits::input_parameter< List >::type args(argsSEXP);
+    rcpp_result_gen = Rcpp::wrap(detector_create(family, theta0, args));
+    return rcpp_result_gen;
+END_RCPP
+}
+// detector_update
+void detector_update(SEXP detector_xptr, double y);
+RcppExport SEXP _exfocus_rcpp_detector_update(SEXP detector_xptrSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type detector_xptr(detector_xptrSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    detector_update(detector_xptr, y);
+    return R_NilValue;
+END_RCPP
+}
+// detector_statistic
+double detector_statistic(SEXP detector_xptr);
+RcppExport SEXP _exfocus_rcpp_detector_statistic(SEXP detector_xptrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type detector_xptr(detector_xptrSEXP);
+    rcpp_result_gen = Rcpp::wrap(detector_statistic(detector_xptr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // focus_offline
 List focus_offline(NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check);
 RcppExport SEXP _exfocus_rcpp_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
@@ -43,6 +78,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_exfocus_rcpp_detector_create", (DL_FUNC) &_exfocus_rcpp_detector_create, 3},
+    {"_exfocus_rcpp_detector_update", (DL_FUNC) &_exfocus_rcpp_detector_update, 2},
+    {"_exfocus_rcpp_detector_statistic", (DL_FUNC) &_exfocus_rcpp_detector_statistic, 1},
     {"_exfocus_rcpp_focus_offline", (DL_FUNC) &_exfocus_rcpp_focus_offline, 6},
     {"_exfocus_rcpp_npfocus_offline", (DL_FUNC) &_exfocus_rcpp_npfocus_offline, 5},
     {NULL, NULL, 0}

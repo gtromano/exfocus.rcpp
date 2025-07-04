@@ -22,7 +22,6 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
-
       return p;
     };
   } else if (family == "bernoulli") {
@@ -31,7 +30,6 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
-
       return p;
     };
   } else if (family == "gamma") {
@@ -50,18 +48,16 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
       p->St = St;
       p->tau = tau;
       p->m0 = m0;
-
       return p;
     };
   }
 
   // new init with constructor
-  Info info(newP);
+  Info info(newP, theta0);
 
-  // this is a temporary fix for the gaussian cost
   if ( (family == "gaussian") & !std::isnan(theta0)) {
     Y = Y - theta0;
-    theta0 = 0;
+    info.theta0 = 0;
   }
 
   std::list<double> stat;
@@ -70,16 +66,13 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
   std::list<int> rk;
   std::list<int> lk;
 
-
   for (auto& y:Y) {
-    info.update(y, newP, threshold, theta0, adp_max_check);
-    stat.push_back(std::max(info.Ql.opt, info.Qr.opt));
-    //
+    info.update(y);
+    stat.push_back(info.statistic());
     qlsize.push_back(info.Ql.ps.size());
     qrsize.push_back(info.Qr.ps.size());
     rk.push_back(info.Qr.k);
     lk.push_back(info.Ql.k);
-
 
     if (stat.back() >= threshold)
       break;
@@ -101,43 +94,36 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
 // [[Rcpp::export(.npfocus_offline)]]
 List npfocus_offline(NumericVector Y, const std::vector<double> quants, const std::vector<double> theta0, List args, bool adp_max_check) {
 
-  //auto pre_change_ukn = std::isnan(theta0[0]);
-
   NumericMatrix focus_stats(quants.size(), Y.size());
   NumericMatrix tau_stats(quants.size(), Y.size());
-  
+
   std::function<std::unique_ptr<Piece>(double, int, double)> newP = [](double St, int tau, double m0){
     std::unique_ptr<Piece> p = std::make_unique<PieceBer>();
     p->St = St;
     p->tau = tau;
     p->m0 = m0;
-
     return p;
   };
 
-
-
   auto q_in = 0;
-  for (auto q:quants) {
-      // initializing a new info with bernoulli cost
-    Info info(newP);
+  for (auto q : quants) {
+    Info info(newP, theta0[q_in]);
     auto y_in = 0;
-    for (auto y:Y) {
-      info.update((y <= q), newP, INFINITY, theta0[q_in], adp_max_check);
-      focus_stats(q_in, y_in) = std::max(info.Ql.opt, info.Qr.opt);
-      if( info.Qr.opt > info.Ql.opt ){
-	tau_stats(q_in, y_in) = get_tau_max(info.Qr, info.cs, theta0[q_in], 0.0);
-      }else{
-	tau_stats(q_in, y_in) = get_tau_max(info.Ql, info.cs, theta0[q_in], 0.0);
+    for (auto y : Y) {
+      info.update((y <= q));
+      focus_stats(q_in, y_in) = info.statistic();
+      if (info.Qr.opt > info.Ql.opt) {
+        tau_stats(q_in, y_in) = get_tau_max(info.Qr, info.cs, theta0[q_in], 0.0);
+      } else {
+        tau_stats(q_in, y_in) = get_tau_max(info.Ql, info.cs, theta0[q_in], 0.0);
       }
-      y_in++; // update counter for the observations
+      y_in++;
     }
-    q_in++; // update counter for the quantiles
+    q_in++;
   }
 
   return List::create(Rcpp::Named("focus_stat") = focus_stats,
-		      Rcpp::Named("tau_stat") = tau_stats);
-
+                      Rcpp::Named("tau_stat") = tau_stats);
 }
 
 

@@ -149,15 +149,20 @@ struct Info {
   CUSUM cs;
   Cost Ql;
   Cost Qr;
-  void update(const double& y, std::function<std::unique_ptr<Piece>(double, int, double)> newP, const double& thres, const double& theta0, const bool& adp_max_check);
-  Info(std::function<std::unique_ptr<Piece>(double, int, double)> newP) {
-    // initialization of the info vector. Default size  20.
+  std::function<std::unique_ptr<Piece>(double, int, double)> newP;
+  double theta0;
+
+  void update(const double& y); // Remove adp_max_check
+  double statistic() const { return std::max(Ql.opt, Qr.opt); }
+
+  Info(std::function<std::unique_ptr<Piece>(double, int, double)> newP_, double theta0_)
+      : newP(newP_), theta0(theta0_) {
     std::vector<std::unique_ptr<Piece>> initpsl;
-    for (auto i = 0; i<50; i++) {
+    for (auto i = 0; i < 50; i++) {
       initpsl.push_back(std::move(newP(0.0, 0, 0.0)));
     }
     std::vector<std::unique_ptr<Piece>> initpsr;
-    for (auto i = 0; i<50; i++) {
+    for (auto i = 0; i < 50; i++) {
       initpsr.push_back(std::move(newP(0.0, 0, 0.0)));
     }
     Cost initQl(std::move(initpsl), 0.0, 0);
