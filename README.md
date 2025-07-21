@@ -24,7 +24,7 @@ with:
 
 ``` r
 # If you have devtools installed:
-# devtools::install_github("yourusername/exfocus.rcpp")
+devtools::install_github("gtromano/exfocus.rcpp")
 # Or, if building locally:
 # setwd("path/to/exfocus.rcpp")
 # devtools::install()
@@ -84,7 +84,7 @@ Here we test the pre-change parameter known recursion, for gaussian
 change in mean.
 
 ``` r
-theta0 <- 0
+theta0 <- 20
 set.seed(45)
 Y <- c(rnorm(1e3, theta0), rnorm(500, theta0 - 1))
 
@@ -100,7 +100,7 @@ To specify the pre-change unkown we have to set the theta0 parameter to
 NaN.
 
 ``` r
-theta0 <- 0
+theta0 <- 20
 set.seed(45)
 Y <- c(rnorm(1e3, theta0), rnorm(500, theta0 - 1))
 
@@ -148,7 +148,7 @@ system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = NaN, args = l
 ```
 
        user  system elapsed 
-          0       0       0 
+      0.000   0.000   0.001 
 
 ``` r
 plot(res$stat, type = "l")
@@ -170,7 +170,7 @@ system.time(res <- focus_offline(Y, 50, family = "poisson", theta0 = theta0, arg
 ```
 
        user  system elapsed 
-          0       0       0 
+      0.000   0.000   0.001 
 
 ``` r
 plot(res$stat, type = "l")
@@ -187,7 +187,7 @@ system.time(res <- focus_offline(Y, 50, family = "bernoulli", theta0 = theta0, a
 ```
 
        user  system elapsed 
-      0.000   0.000   0.001 
+      0.000   0.001   0.001 
 
 ``` r
 plot(res$stat, type = "l")
@@ -237,7 +237,7 @@ system.time(res <- npfocus_offline(Y = Y, threshold = c(90, 15), quantiles = qua
 ```
 
        user  system elapsed 
-      0.029   0.000   0.029 
+      0.028   0.000   0.028 
 
 ``` r
 par(mfrow = c(2, 1))
