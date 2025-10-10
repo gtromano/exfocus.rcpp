@@ -46,8 +46,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // focus_offline
-List focus_offline(NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check);
-RcppExport SEXP _exfocus_rcpp_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP) {
+List focus_offline(NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check, String side);
+RcppExport SEXP _exfocus_rcpp_focus_offline(SEXP ZSEXP, SEXP thresholdSEXP, SEXP familySEXP, SEXP theta0SEXP, SEXP argsSEXP, SEXP adp_max_checkSEXP, SEXP sideSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -57,7 +57,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type theta0(theta0SEXP);
     Rcpp::traits::input_parameter< List >::type args(argsSEXP);
     Rcpp::traits::input_parameter< bool >::type adp_max_check(adp_max_checkSEXP);
-    rcpp_result_gen = Rcpp::wrap(focus_offline(Z, threshold, family, theta0, args, adp_max_check));
+    Rcpp::traits::input_parameter< String >::type side(sideSEXP);
+    rcpp_result_gen = Rcpp::wrap(focus_offline(Z, threshold, family, theta0, args, adp_max_check, side));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -81,7 +82,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_exfocus_rcpp_detector_create", (DL_FUNC) &_exfocus_rcpp_detector_create, 3},
     {"_exfocus_rcpp_detector_update", (DL_FUNC) &_exfocus_rcpp_detector_update, 2},
     {"_exfocus_rcpp_detector_statistic", (DL_FUNC) &_exfocus_rcpp_detector_statistic, 1},
-    {"_exfocus_rcpp_focus_offline", (DL_FUNC) &_exfocus_rcpp_focus_offline, 6},
+    {"_exfocus_rcpp_focus_offline", (DL_FUNC) &_exfocus_rcpp_focus_offline, 7},
     {"_exfocus_rcpp_npfocus_offline", (DL_FUNC) &_exfocus_rcpp_npfocus_offline, 5},
     {NULL, NULL, 0}
 };

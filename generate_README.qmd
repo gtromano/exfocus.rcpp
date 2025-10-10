@@ -185,4 +185,22 @@ par(mfrow = c(1, 1))
 which.max(table(apply(res$tau_stat[, 1:res$n], 2, median)))
 ```
 
+## One-sided Detection with `side` Argument
+
+You can restrict detection to only upward (right) or downward (left) changes using the `side` argument. For example, to detect only upward changes (right-sided):
+
+```{r}
+theta0 <- 0
+set.seed(45)
+Y <- c(rnorm(1e3, theta0), rnorm(500, theta0 + 2))
+
+# Only detect upward changes (right-sided)
+res_right <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, side = "right")
+plot(res_right$stat, type = "l", main = "Right-sided FOCuS Statistic")
+
+# Only detect downward changes (left-sided)
+res_left <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, side = "left")
+plot(res_left$stat, type = "l", main = "Left-sided FOCuS Statistic")
+```
+
 

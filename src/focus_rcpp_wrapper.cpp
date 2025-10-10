@@ -9,7 +9,12 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List focus_offline (NumericVector Z, double threshold, String family, double theta0, List args, bool adp_max_check) {
+List focus_offline(NumericVector Z, double threshold, 
+                   String family = "gaussian", 
+                   double theta0 = NA_REAL, 
+                   List args = R_NilValue, 
+                   bool adp_max_check = false, 
+                   String side = "both") {
 
   auto Y = clone(Z);
 
@@ -55,7 +60,7 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
   // new init with constructor
   Info info(newP, theta0);
 
-  if ( (family == "gaussian") & !std::isnan(theta0)) {
+  if ((family == "gaussian") & !std::isnan(theta0)) {
     Y = Y - theta0;
     info.theta0 = 0;
   }
@@ -66,9 +71,18 @@ List focus_offline (NumericVector Z, double threshold, String family, double the
   std::list<int> rk;
   std::list<int> lk;
 
-  for (auto& y:Y) {
+  for (auto& y : Y) {
     info.update(y);
-    stat.push_back(info.statistic());
+
+    // Use side argument to select statistic
+    if (side == "right") {
+      stat.push_back(info.right_statistic());
+    } else if (side == "left") {
+      stat.push_back(info.left_statistic());
+    } else {
+      stat.push_back(info.statistic());
+    }
+
     qlsize.push_back(info.Ql.ps.size());
     qrsize.push_back(info.Qr.ps.size());
     rk.push_back(info.Qr.k);

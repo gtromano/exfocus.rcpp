@@ -154,6 +154,9 @@ struct Info {
 
   void update(const double& y); // Remove adp_max_check
   double statistic() const { return std::max(Ql.opt, Qr.opt); }
+  double right_statistic() const { return Qr.opt; }
+  double left_statistic() const { return Ql.opt; }
+
 
   Info(std::function<std::unique_ptr<Piece>(double, int, double)> newP_, double theta0_)
       : newP(newP_), theta0(theta0_) {

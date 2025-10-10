@@ -13,8 +13,8 @@ detector_statistic <- function(detector_xptr) {
     .Call(`_exfocus_rcpp_detector_statistic`, detector_xptr)
 }
 
-focus_offline <- function(Z, threshold, family, theta0, args, adp_max_check) {
-    .Call(`_exfocus_rcpp_focus_offline`, Z, threshold, family, theta0, args, adp_max_check)
+focus_offline <- function(Z, threshold, family = "gaussian", theta0 = NA_real_, args = NULL, adp_max_check = FALSE, side = "both") {
+    .Call(`_exfocus_rcpp_focus_offline`, Z, threshold, family, theta0, args, adp_max_check, side)
 }
 
 .npfocus_offline <- function(Y, quants, theta0, args, adp_max_check) {
