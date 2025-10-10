@@ -14,6 +14,8 @@
   - [Other distributions](#other-distributions)
 - [exfocus online implementation](#exfocus-online-implementation)
 - [NP-FOCuS](#np-focus)
+  - [One-sided Detection with `side`
+    Argument](#one-sided-detection-with-side-argument)
 
 # exfocus.rcpp
 
@@ -127,7 +129,7 @@ system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = 1/theta0, arg
 ```
 
        user  system elapsed 
-          0       0       0 
+      0.001   0.000   0.000 
 
 ``` r
 plot(res$stat, type = "l")
@@ -148,7 +150,7 @@ system.time(res <- focus_offline(Y, 50, family = "gamma", theta0 = NaN, args = l
 ```
 
        user  system elapsed 
-      0.000   0.000   0.001 
+      0.001   0.000   0.000 
 
 ``` r
 plot(res$stat, type = "l")
@@ -187,7 +189,7 @@ system.time(res <- focus_offline(Y, 50, family = "bernoulli", theta0 = theta0, a
 ```
 
        user  system elapsed 
-      0.000   0.001   0.001 
+      0.000   0.000   0.001 
 
 ``` r
 plot(res$stat, type = "l")
@@ -237,7 +239,7 @@ system.time(res <- npfocus_offline(Y = Y, threshold = c(90, 15), quantiles = qua
 ```
 
        user  system elapsed 
-      0.028   0.000   0.028 
+      0.032   0.000   0.031 
 
 ``` r
 par(mfrow = c(2, 1))
@@ -255,3 +257,29 @@ which.max(table(apply(res$tau_stat[, 1:res$n], 2, median)))
 
     647 
     116 
+
+## One-sided Detection with `side` Argument
+
+You can restrict detection to only upward (right) or downward (left)
+changes using the `side` argument. For example, to detect only upward
+changes (right-sided):
+
+``` r
+theta0 <- 0
+set.seed(45)
+Y <- c(rnorm(1e3, theta0), rnorm(500, theta0 + 2))
+
+# Only detect upward changes (right-sided)
+res_right <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, side = "right")
+plot(res_right$stat, type = "l", main = "Right-sided FOCuS Statistic")
+```
+
+![](generate_README_files/figure-commonmark/unnamed-chunk-9-1.png)
+
+``` r
+# Only detect downward changes (left-sided)
+res_left <- focus_offline(Y, 50, family = "gaussian", theta0 = NaN, side = "left")
+plot(res_left$stat, type = "l", main = "Left-sided FOCuS Statistic")
+```
+
+![](generate_README_files/figure-commonmark/unnamed-chunk-9-2.png)
