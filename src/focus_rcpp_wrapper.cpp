@@ -9,11 +9,11 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List focus_offline(NumericVector Z, double threshold, 
-                   String family = "gaussian", 
-                   double theta0 = NA_REAL, 
-                   List args = R_NilValue, 
-                   bool adp_max_check = false, 
+List focus_offline(NumericVector Z, double threshold,
+                   String family = "gaussian",
+                   double theta0 = NA_REAL,
+                   List args = R_NilValue,
+                   bool adp_max_check = false,
                    String side = "both") {
 
   auto Y = clone(Z);
@@ -66,6 +66,7 @@ List focus_offline(NumericVector Z, double threshold,
   }
 
   std::list<double> stat;
+  std::list<int> opt_tau;
   std::list<int> qlsize;
   std::list<int> qrsize;
   std::list<int> rk;
@@ -83,6 +84,12 @@ List focus_offline(NumericVector Z, double threshold,
       stat.push_back(info.statistic());
     }
 
+    if (info.Qr.opt > info.Ql.opt) {
+      opt_tau.push_back(get_tau_max(info.Qr, info.cs, theta0, 0.0));
+    } else {
+      opt_tau.push_back(get_tau_max(info.Ql, info.cs, theta0, 0.0));
+    }
+
     qlsize.push_back(info.Ql.ps.size());
     qrsize.push_back(info.Qr.ps.size());
     rk.push_back(info.Qr.k);
@@ -93,6 +100,7 @@ List focus_offline(NumericVector Z, double threshold,
   }
 
   return List::create(Rcpp::Named("stat") = stat,
+                      Rcpp::Named("opt_tau") = opt_tau,
                       Rcpp::Named("qrsize") = qrsize,
                       Rcpp::Named("qlsize") = qlsize,
                       Rcpp::Named("rk") = rk,
